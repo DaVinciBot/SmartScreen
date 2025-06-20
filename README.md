@@ -24,3 +24,7 @@ Le serveur HTTPS et wss fonctionnent sur le même port soit le port 443. Le WebS
 ### Démarrer le serveur
 
 Il est possible de démarrer le serveur via la commande `sudo npm run start` une fois dans le dossier WEBRTC_SCREEN_SHARE ou `node server.js`
+
+### Transmission du flux vidéo
+
+La transmission vidéo se fait via WebRTC (Web Real-Time Communication) qui est une technologie open-source qui permet aux navigateurs et applications mobiles de communiquer en temps réel directement (P2P) sans plugins. Donc dans notre cas, le serveur fait égalemnt office de client (peer) pour transmettre le flux vidéo.
