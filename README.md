@@ -19,8 +19,8 @@ Client HTTPS
       │
       └──> Déconnexion --> Retiré de la liste
 ```
-Le serveur HTTPS et wss fonctionnent sur le même port soit le port 443.
+Le serveur HTTPS et wss fonctionnent sur le même port soit le port 443. Le WebSocket est conçu pour fonctionner au dessus du HTTPS (ou HTTP) via une connexion "upgradée"
 
 ### Démarrer le serveur
 
-Il est possible de démarrer le serveur via la commande `sudo npm run start` une fois dans le dossier WEBRTC_SCREEN_SHARE
+Il est possible de démarrer le serveur via la commande `sudo npm run start` une fois dans le dossier WEBRTC_SCREEN_SHARE ou `node server.js`
