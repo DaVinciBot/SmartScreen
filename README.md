@@ -27,4 +27,17 @@ Il est possible de démarrer le serveur via la commande `sudo npm run start` une
 
 ### Transmission du flux vidéo
 
-La transmission vidéo se fait via WebRTC (Web Real-Time Communication) qui est une technologie open-source qui permet aux navigateurs et applications mobiles de communiquer en temps réel directement (P2P) sans plugins. Donc dans notre cas, le serveur fait égalemnt office de client (peer) pour transmettre le flux vidéo.
+La transmission vidéo se fait via WebRTC (Web Real-Time Communication) qui est une technologie open-source qui permet aux navigateurs et applications mobiles de communiquer en temps réel directement (P2P) sans plugins. Donc dans notre cas, le serveur fait également office de client (peer) pour transmettre le flux vidéo.
+
+### Démarrage lors du bootage 
+
+Afin de faire en sorte que le programme se lance dès lors que la raspberry pi est alimentée, il faut d'abord écrire un script bash :
+```
+#!/bin/bash
+export DISPLAY=:0
+log_file="/home/utilisateur/cast_log.txt
+cd /home/utilisateur/Dossier_contenant_le_projet
+npm run start >> "$log_file" 2>&1 &
+chromium-browser --kiosk "https://adresse_ip_ou_nom_de_domaine_du_serveur/public/receiver.html
+```
+Puis on se place dans le dossier utilisateur `nano .bashrc` et l'on vient ajouter `/chemin/vers/le/script.sh &` à la dernière ligne
