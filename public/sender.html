@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sender</title>
+</head>
+<body>
+  <h1>Partager mon écran</h1>
+  <button id="start">Démarrer le partage</button>
+
+  <script>
+    const ws= new WebSocket("wss://192.168.0.30");
+    const pc = new RTCPeerConnection();
+    let stream;
+    let is_busy=true;
+
+    ws.onopen = () => {
+      console.log("WebSocket connecté");
+      const data = {
+        type : 'is_busy'
+      }
+      ws.send(JSON.stringify(data));
+
+    };
+
+    ws.onmessage = async (event) => {
+      const messageText = event.data instanceof Blob ? await event.data.text() : event.data;
+      const data = JSON.parse(messageText);
+      console.log("Message reçu (sender)", data);
+
+      if (data.type === 'answer') {
+        await pc.setRemoteDescription(new RTCSessionDescription(data));
+        console.log("Answer reçue et appliquée.");
+      } else if (data.candidate) {
+        await pc.addIceCandidate(new RTCIceCandidate(data));
+        console.log("Candidate ajoutée (sender).");
+      }
+      else if(data.type=='busy_update'){
+        is_busy=data.message;
+          document.querySelector("#start").disabled = is_busy; //selectionne le bouton nommé id start (nvl methode) 
+      }
+  };
+
+  // Détection arrêt manuel du partage
+  document.getElementById('start').onclick = async () => {
+    stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+    
+    // Ajouter un tracker pour la fin du stream
+    stream.getTracks().forEach(track => {
+      track.onended = () => {
+        ws.send(JSON.stringify({ type: 'disconnect' }));
+        pc.close();
+        document.querySelector("#start").disabled = false;
+        is_busy = false;
+      };
+      pc.addTrack(track, stream);
+    });
+    };
+
+    document.getElementById('start').onclick = async () => {
+      stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      ws.send(JSON.stringify(offer));
+      console.log("Offer envoyée", offer);
+    };
+
+    pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        ws.send(JSON.stringify(event.candidate));
+        console.log("Candidate envoyée (sender)", event.candidate);
+      }
+    };
+  </script>
+</body>
+</html>
